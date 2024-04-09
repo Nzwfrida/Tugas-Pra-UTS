@@ -51,8 +51,6 @@ async function createUser(request, response, next) {
     const email = request.body.email;
     const password = request.body.password;
 
-    const confirmPassword = request.body.confirmPassword;
-
     const checkemail = await usersService.checkEmail(email);
     if (checkemail == true) {
       throw errorResponder(
@@ -88,15 +86,23 @@ async function updateUser(request, response, next) {
     const name = request.body.name;
     const email = request.body.email;
 
-    const success = await usersService.updateUser(id, name, email);
-    if (!success) {
+    const checkemail = await usersService.checkEmail(email);
+    if (checkemail == true) {
       throw errorResponder(
-        errorTypes.UNPROCESSABLE_ENTITY,
-        'Failed to update user'
+        errorTypes.EMAIL_ALREADY_TAKEN,
+        'Email is already used, try again'
       );
-    }
+    } else {
+      const success = await usersService.updateUser(id, name, email);
+      if (!success) {
+        throw errorResponder(
+          errorTypes.UNPROCESSABLE_ENTITY,
+          'Failed to update user'
+        );
+      }
 
-    return response.status(200).json({ id });
+      return response.status(200).json({ id });
+    }
   } catch (error) {
     return next(error);
   }
