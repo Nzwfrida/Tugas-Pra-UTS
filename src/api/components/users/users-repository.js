@@ -31,6 +31,17 @@ async function createUser(name, email, password) {
     password,
   });
 }
+async function checkEmail(email) {
+  const checkemail = await User.find({email : email }).exec();
+
+  if (checkemail.length == 0) {
+
+    return false;
+  }else{
+
+    return true;
+  }
+}
 
 /**
  * Update existing user
@@ -68,4 +79,5 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
+  checkEmail,
 };

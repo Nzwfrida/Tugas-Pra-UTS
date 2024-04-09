@@ -51,6 +51,15 @@ async function createUser(request, response, next) {
     const email = request.body.email;
     const password = request.body.password;
 
+    const checkemail = await usersService.checkEmail(email);
+    if (checkemail == true) {
+      throw errorResponder(
+        errorTypes.EMAIL_ALREADY_TAKEN,
+        'Email is already used, try again'
+      );
+
+    }else{
+    
     const success = await usersService.createUser(name, email, password);
     if (!success) {
       throw errorResponder(
@@ -59,7 +68,7 @@ async function createUser(request, response, next) {
       );
     }
 
-    return response.status(200).json({ name, email });
+  return response.status(200).json({ name, email });}
   } catch (error) {
     return next(error);
   }

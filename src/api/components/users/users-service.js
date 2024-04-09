@@ -61,6 +61,15 @@ async function createUser(name, email, password) {
   return true;
 }
 
+async function checkEmail(email) {
+  try {
+   return await usersRepository.checkEmail(email);
+  } catch (err) {
+    return null;
+  }
+
+}
+
 /**
  * Update existing user
  * @param {string} id - User ID
@@ -113,4 +122,5 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
+  checkEmail,
 };
