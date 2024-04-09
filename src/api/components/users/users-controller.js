@@ -50,23 +50,31 @@ async function createUser(request, response, next) {
     const name = request.body.name;
     const email = request.body.email;
     const password = request.body.password;
+    const confirmPassword = request.body.confirmPassword;
 
-    const checkemail = await usersService.checkEmail(email);
-    if (checkemail == true) {
+    if (password !== confirmPassword) {
       throw errorResponder(
-        errorTypes.EMAIL_ALREADY_TAKEN,
-        'Email is already used, try again'
+        errorTypes.INVALID_PASSWORD,
+        'Password and confirm password are not same.'
       );
     } else {
-      const success = await usersService.createUser(name, email, password);
-      if (!success) {
+      const checkemail = await usersService.checkEmail(email);
+      if (checkemail == true) {
         throw errorResponder(
-          errorTypes.UNPROCESSABLE_ENTITY,
-          'Failed to create user'
+          errorTypes.EMAIL_ALREADY_TAKEN,
+          'Email is already used, try again'
         );
-      }
+      } else {
+        const success = await usersService.createUser(name, email, password);
+        if (!success) {
+          throw errorResponder(
+            errorTypes.UNPROCESSABLE_ENTITY,
+            'Failed to create user'
+          );
+        }
 
-      return response.status(200).json({ name, email });
+        return response.status(200).json({ name, email });
+      }
     }
   } catch (error) {
     return next(error);
